@@ -1,0 +1,10 @@
+.container-main-dashboard {
+    .wrapper-card {
+        display: grid;
+        grid-template-columns: auto auto auto;
+        gap: 30px;
+    }
+    h2{
+        margin-bottom: 10px;
+    }
+}

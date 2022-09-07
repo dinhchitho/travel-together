@@ -1,0 +1,22 @@
+.notification-item {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  // margin: 0 10px 10px 10px;
+  border-radius: 8px;
+  // img {
+  //   width: 56px;
+  //   height: 56px;
+  //   border-radius: 50%;
+  //   object-fit: cover;
+  // }
+  &__wrapper {
+    // padding: 0 10px;
+  }
+  &:hover {
+    background-color: #e4e6e9;
+  }
+  i {
+    transform: translate(130%, -70%);
+  }
+}

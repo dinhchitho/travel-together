@@ -1,0 +1,19 @@
+.container-notification-child {
+  // padding: 10px 0;
+  position: initial;
+  right: 80px;
+  background-color: #ffffff;
+  box-shadow: 1px 1px 1px 1px;
+  min-width: 376px;
+  min-height: 460px;
+  z-index: 1;
+  height: 576px;
+  overflow-y: auto;
+  .notification-item {
+    display: flex;
+  }
+}
+
+.notification__wrapper {
+  padding: 0 10px;
+}

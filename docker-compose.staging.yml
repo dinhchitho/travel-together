@@ -1,0 +1,130 @@
+version: '3.3'
+
+services:
+  api-prod:
+    image: registry.gitlab.com/traveltogether/travel-together-2022/socket:latest
+    container_name: rest-api-prod
+    restart: unless-stopped
+    # build: 
+    #   context: ./socket-server/socket
+    #   dockerfile: Dockerfile.prod
+    ports:
+      - 3333:3333
+    environment:
+      # - MONGODB_URL=mongodb://mongo:27017/restAPI
+      # - REDIS_URL=redis://redis:6379
+      - CONFIG_SERVICE=http://travel-together-testing.uksouth.cloudapp.azure.com/api
+    # depends_on:
+    #   - mongo
+      # - redis
+    networks:
+      - node_network
+      
+  client-prod:
+    image: registry.gitlab.com/traveltogether/travel-together-2022/frontend:latest
+    container_name: client-prod
+    restart: unless-stopped
+    # build: 
+    #   context: ./front-end/travel-together-fe
+    #   dockerfile: Dockerfile.prod
+    # environment:
+    #   - REACT_APP_CONFIG_SERVICE=http://travel-together-testing.uksouth.cloudapp.azure.com/1234567
+    #   - REACT_APP_SOCKET_URL=http://travel-together-testing.uksouth.cloudapp.azure.com
+    # env_file:
+    #   - ./front-end/travel-together-fe/staging.env
+    ports:
+      - 3000:3000
+    depends_on:
+      - api-prod
+      - config-service-prod
+    networks:
+      - node_network
+
+  config-service-prod:
+    image: registry.gitlab.com/traveltogether/travel-together-2022/backend:latest
+    container_name: config-service-prod
+    restart: unless-stopped
+    # build: 
+    #   context: ./back-end/config-service
+    #   dockerfile: Dockerfile.prod
+    ports:
+      - 8095:8095
+    environment:
+      - SPRING_SOCKET_URL=http://travel-together-testing.uksouth.cloudapp.azure.com/socket-server/
+      - SPRING_DATA_MONGO_AUTHENTICATION_DATABASE=admin
+      - SPRING_DATA_MONGO_USERNAME=thodc
+      - SPRING_DATA_MONGO_PASSWORD=de140096A@
+      - SPRING_DATA_MONGO_HOST=20.163.124.249
+      - SPRING_DATA_MONGO_PORT=27017
+      - SPRING_DATA_MONGO_DATABASE=travel-together-staging
+      - SPRING_DATA_MONGO_URI=mongodb://thodc:de140096A%40@20.163.124.249:27017/travel-together-staging?authSource=admin
+      # - MONGODB_URL=mongodb://mongo:27017/restAPI
+      # - REDIS_URL=redis://redis:6379
+      # - CONFIG_SERVICE=https://app-config-service-220618130713.azurewebsites.net
+    # depends_on:
+    #   - mongo_db
+      # - redis
+    networks:
+      - node_network
+
+#   mongo_db:
+#     image: mongo
+#     container_name: mongodb
+#     ports:
+#       - 27011:27017
+#     volumes:
+#       - mongodb:/data/db
+# #    environment:
+# #      - MONGO_INITDB_ROOT_USERNAME=rootuser
+# #      - MONGO_INITDB_ROOT_PASSWORD=rootpass
+#   mongo-express:
+#     image: mongo-express
+#     container_name: mongo-express
+#     restart: always
+#     ports:
+#       - 8081:8081
+#     environment:
+# #      - ME_CONFIG_MONGODB_ADMINUSERNAME=rootuser
+# #      - ME_CONFIG_MONGODB_ADMINPASSWORD=rootpass
+#       - ME_CONFIG_MONGODB_SERVER=mongodb
+
+  nginx:
+    image: nginx:1.21.5-alpine
+    container_name: nginx
+    restart: always
+    ports:
+      - 80:80
+      # - 443:443
+    volumes:
+      - ./nginx/nginx-prod.conf:/etc/nginx/conf.d/default.conf
+      # - web-root:/var/www/html
+      # - certbot-etc:/etc/letsencrypt
+      # - certbot-var:/var/lib/letsencrypt
+      # - ./nginx/dhparam-2048.pem:/etc/ssl/certs/dhparam-2048.pem
+    depends_on:
+      # - back-end-demo
+      - config-service-prod
+      - api-prod
+      - client-prod
+    networks:
+      - node_network
+  # certbot:
+  #   container_name: certbot
+  #   image: certbot/certbot:v1.9.0
+  #   volumes:
+  #     - certbot-etc:/etc/letsencrypt
+  #     - certbot-var:/var/lib/letsencrypt
+  #     - web-root:/var/www/html
+  #   depends_on:
+  #     - nginx
+  #   command: certonly --webroot --webroot-path=/var/www/html --email thod561@gmail.com --agree-tos --no-eff-email --force-renewal -d travel-together-production.eastus2.cloudapp.azure.com  -d travel-together-production.eastus2.cloudapp.azure.com
+
+volumes:
+  mongodb:
+  # redis:
+  # certbot-etc:
+  # certbot-var:
+  # web-root:
+
+networks:
+  node_network:

@@ -1,0 +1,66 @@
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .main-login {
+        display: flex;
+        .main-left {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 150px;
+        }
+        .main-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            .login-title {
+                font-weight: bold;
+                margin-bottom: 35px;
+                font-size: 30px;
+                color: #333333;
+                font-family: 'Montserrat', sans-serif;
+            }
+            .container-login-form {
+                .input-login {
+                    margin-top: 15px;
+                    display: flex;
+                    flex-direction: column;
+                    font-weight: bold;
+                    input {
+                        width: 350px;
+                        height: 40px;
+                        background-color: #F8F8F8;
+                        border-color: #757575;
+                        border-radius: 2px;
+                        outline: none;
+                        border: none;
+                    }
+                    input::-webkit-input-placeholder {
+                        font-family: Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Liberation Serif", Georgia, serif;
+                        background-color: 757575;
+                    }
+                    .label-input {
+                        color: #333333;
+                        font-size: 14px;
+                        font-family: 'Montserrat', sans-serif;
+                    }
+                }
+                .container-btn-login {
+                    margin-top: 15px;
+                    .btn-login {
+                        background-color: #9CABC2;
+                        border-color: #0056D7;
+                        border-radius: 4px;
+                        width: 350px;
+                        height: 40px;
+                        color: #FFFFFF;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+    }
+}

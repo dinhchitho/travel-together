@@ -1,0 +1,32 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  application:
+    name: Travel Together
+  data:
+    mongodb:
+#       authentication-database: admin
+#       username: rootuser
+#       password: rootpass
+      host: localhost
+      port: 27011
+      database: travel-together
+      uri: mongodb://localhost:27011/travel-together
+  socket:
+    url: http://localhost:3333/socket-server/
+server:
+  port: 8095
+  servlet:
+    context-path: /api
+springdoc:
+  swagger-ui:
+    path: /api/swagger-ui.html
+travel-together:
+  app:
+    jwtSecret: travelTogetherSecretKey
+    jwtExpirationMs: 86400000
+twilio:
+  account_sid: AC32af6f3d56b4a167ea1a1b46e447e054
+  auth_token: ca45d628554ce8886373c10bf766e20f
+  trial_number: +17742685682

@@ -1,0 +1,467 @@
+image: docker:latest
+services:
+  - docker:dind
+
+stages:
+  - scan code
+  - test
+  - build
+  - push docker
+  - deploy
+
+# before_script:
+#     - docker version
+#     - docker-compose version
+
+variables:
+  SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar" # Defines the location of the analysis task cache
+  GIT_DEPTH: "0" # Tells git to fetch all the branches of the project, required by the analysis task
+  DOCKER_DRIVER: overlay
+  SPRING_PROFILES_ACTIVE: gitlab-ci
+# Scan code Java
+sonarcloud-code-BE:
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  stage: scan code
+  tags:
+    - testing
+  except:
+    - main
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - cd back-end
+    - cd config-service
+    - sonar-scanner -Dsonar.projectKey=back-end -Dsonar.sources=. -Dsonar.qualitygate.wait=true -Dsonar.host.url=https://sonarqube-travel.westeurope.cloudapp.azure.com -Dsonar.login=3167a2171b48667c9a2b297b424aaa6c0d8f3f5b
+  # allow_failure:
+  #   exit_codes:
+  #     - 137
+  #     - 255
+# #   only:
+# #     refs:
+# #       - merge_requests
+# #     variables:
+# #       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# # # Scan code TypeScript App
+sonarcloud-code-App:
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  stage: scan code
+  tags:
+    - testing
+  except:
+    - main
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - cd app
+    - cd travel-together-fe
+    - npm install --legacy-peer-deps
+    - sonar-scanner -Dsonar.projectKey=app -Dsonar.sources=. -Dsonar.qualitygate.wait=true -Dsonar.host.url=https://sonarqube-travel.westeurope.cloudapp.azure.com -Dsonar.login=3167a2171b48667c9a2b297b424aaa6c0d8f3f5b
+  # allow_failure:
+  #   exit_codes:
+  #     - 137
+  #     - 255
+# #   only:
+# #     refs:
+# #       - merge_requests
+# #     variables:
+# #       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# # # Scan code TypeScript Web
+sonarcloud-code-Web:
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  stage: scan code
+  tags:
+    - testing
+  except:
+    - main
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - cd front-end
+    - cd travel-together-fe
+    - npm i
+    - sonar-scanner -Dsonar.projectKey=front-end -Dsonar.sources=. -Dsonar.qualitygate.wait=true -Dsonar.host.url=https://sonarqube-travel.westeurope.cloudapp.azure.com -Dsonar.login=3167a2171b48667c9a2b297b424aaa6c0d8f3f5b
+  # allow_failure:
+  #   exit_codes:
+  #     - 137
+  #     - 255
+# #   only:
+# #     refs:
+# #       - merge_requests
+# #     variables:
+# #       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# # # Scan code TypeScript Socket
+sonarcloud-code-Socket:
+  image:
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  stage: scan code
+  tags:
+    - testing
+  except:
+    - main
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script:
+    - cd socket-server
+    - cd socket
+    - npm i
+    - sonar-scanner -Dsonar.projectKey=socket -Dsonar.sources=. -Dsonar.qualitygate.wait=true -Dsonar.host.url=https://sonarqube-travel.westeurope.cloudapp.azure.com -Dsonar.login=3167a2171b48667c9a2b297b424aaa6c0d8f3f5b
+  # allow_failure:
+  #   exit_codes:
+  #     - 137
+  #     - 255
+#   only:
+#     refs:
+#       - merge_requests
+#     variables:
+#       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# sonarcloud-maven:
+#   image: maven:3-jdk-11
+#   stage: scan code
+#   cache:
+#     key: "${CI_JOB_NAME}"
+#     paths:
+#       - .sonar/cache
+#   script:
+#     - cd back-end
+#     - cd config-service
+#     - mvn sonar:sonar -Dsonar.projectKey=maven -Dsonar.host.url=https://scancode.westus3.cloudapp.azure.com -Dsonar.login=0d3f0a9c614552d11a63a93d51a6d0fc5b40abf3
+#   only:
+#     refs:
+#       - merge_requests
+#     variables:
+#       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# only:
+#   refs:
+#     - merge_requests
+#   variables:
+#     - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# # UT APP
+# unit-test-job-App:
+#   image: node:16
+#   stage: test
+#   script:
+#     - cd app
+#     - cd travel-together-fe
+#     - npm i
+#   only:
+#     refs:
+#       - merge_requests
+#     variables:
+#       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# # UT FE
+# unit-test-job-FE:
+#   image: node:16
+#   stage: test
+#   script:
+#     - cd front-end
+#     - cd travel-together-fe
+#     - npm i
+#     # - npm test
+#   only:
+#     refs:
+#       - merge_requests
+#     variables:
+#       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# # UT Socket
+# unit-test-job-Socket:
+#   image: node:16
+#   stage: test
+#   script:
+#     - cd socket-server
+#     - npm i
+#   only:
+#     refs:
+#       - merge_requests
+#     variables:
+#       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# Build BE
+build-job-BE-testing:
+  image: maven:3-jdk-8
+  stage: build
+  tags:
+    - testing
+  only:
+    - test
+  script:
+    - cd back-end
+    - cd config-service
+    - mvn clean install
+    - mvn package
+  artifacts:
+    paths:
+      - back-end/config-service/target/*.jar
+
+build-job-BE-production:
+  image: maven:3-jdk-8
+  stage: build
+  tags:
+    - production
+  only:
+    - main
+  script:
+    - cd back-end
+    - cd config-service
+    - mvn clean install
+    - mvn package
+  artifacts:
+    paths:
+      - back-end/config-service/target/*.jar
+# only:
+#   refs:
+#     - merge_requests
+#   variables:
+#     - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# Build FE
+build-job-FE-testing:
+  image: node:16
+  stage: build
+  tags:
+    - testing
+  only:
+    - test
+  script:
+    - cd front-end
+    - cd travel-together-fe
+    - npm i
+    - npm run build
+  artifacts:
+    paths:
+      - front-end/travel-together-fe/build
+
+build-job-FE-production:
+  image: node:16
+  stage: build
+  tags:
+    - production
+  only:
+    - main
+  script:
+    - cd front-end
+    - cd travel-together-fe
+    - npm i
+    - npm run build
+  artifacts:
+    paths:
+      - front-end/travel-together-fe/build
+
+#   only:
+#     refs:
+#       - merge_requests
+#     variables:
+#       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+# Build Socket
+build-job-Socket-testing:
+  image: node:16
+  stage: build
+  tags:
+    - testing
+  only:
+    - test
+  script:
+    - cd socket-server
+    - cd socket
+    - npm i
+    - npm run build
+  artifacts:
+    paths:
+      - socket-server/socket/dist
+
+build-job-Socket-production:
+  image: node:16
+  stage: build
+  tags:
+    - production
+  only:
+    - main
+  script:
+    - cd socket-server
+    - cd socket
+    - npm i
+    - npm run build
+  artifacts:
+    paths:
+      - socket-server/socket/dist
+# Build App
+# build-job-App:
+#   image: node:16
+#   stage: build
+#   script:
+#     - cd app
+#     - cd travel-together-fe
+#     - npm install --legacy-peer-deps
+# - npm run build
+
+# UT BE
+# unit-test-job-BE:
+#   image: maven:3-jdk-8
+#   stage: test
+#   script:
+#     - cd back-end
+#     - cd config-service
+#     - mvn clean
+#     - mvn compile
+#     - mvn test
+
+#Docker build FE
+docker-build-FE-testing:
+  stage: push docker
+  tags:
+    - testing
+  only:
+    - test
+  script:
+    - cd front-end
+    - cd travel-together-fe
+    - sudo docker build -f Dockerfile.staging -t registry.gitlab.com/traveltogether/travel-together-2022/frontend-stag:latest .
+    - sudo docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - sudo docker push registry.gitlab.com/traveltogether/travel-together-2022/frontend-stag:latest
+
+docker-build-FE-production:
+  stage: push docker
+  tags:
+    - production
+  only:
+    - main
+  script:
+    - cd front-end
+    - cd travel-together-fe
+    - docker build -f Dockerfile.prod -t registry.gitlab.com/traveltogether/travel-together-2022/frontend:latest .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/traveltogether/travel-together-2022/frontend:latest
+#   only:
+#     refs:
+#       - merge_requests
+#     variables:
+#       - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+
+# Docker build BE
+docker-build-BE-testing:
+  stage: push docker
+  tags:
+    - testing
+  only:
+    - test
+  script:
+    - cd back-end
+    - cd config-service
+    - sudo docker build -t registry.gitlab.com/traveltogether/travel-together-2022/backend-stag:latest .
+    - sudo docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - sudo docker push registry.gitlab.com/traveltogether/travel-together-2022/backend-stag:latest
+
+docker-build-BE-production:
+  stage: push docker
+  tags:
+    - production
+  only:
+    - main
+  script:
+    - cd back-end
+    - cd config-service
+    - docker build -t registry.gitlab.com/traveltogether/travel-together-2022/backend:latest .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/traveltogether/travel-together-2022/backend:latest
+# # only:
+# #   refs:
+# #     - merge_requests
+# #   variables:
+# #     - $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "develop" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /^release\/.*$/
+# # Docker build Socket
+docker-build-Socket-testing:
+  stage: push docker
+  tags:
+    - testing
+  only:
+    - test
+  script:
+    - cd socket-server
+    - cd socket
+    - sudo docker build -t registry.gitlab.com/traveltogether/travel-together-2022/socket-stag:latest .
+    - sudo docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - sudo docker push registry.gitlab.com/traveltogether/travel-together-2022/socket-stag:latest
+
+docker-build-Socket-production:
+  stage: push docker
+  tags:
+    - production
+  only:
+    - main
+  script:
+    - cd socket-server
+    - cd socket
+    - docker build -t registry.gitlab.com/traveltogether/travel-together-2022/socket:latest .
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.gitlab.com
+    - docker push registry.gitlab.com/traveltogether/travel-together-2022/socket:latest
+# expo-build:
+#   image: node:16
+#   stage: deploy
+#   artifacts:
+#     paths:
+#       - ipas/
+#   script:
+#     - cd app
+#     - cd travel-together-fe
+#     - sed -i "s/0.0.0/${TAG}/g" app.json
+#     - npm ci --prefer-offline
+#     - echo $P8_KEY > ${HOME}/${CI_PROJECT_NAME}.p8
+#     - echo $P12_DIST | base64 -d > ${HOME}/${CI_PROJECT_NAME}.p12
+#     - echo $PROVISIONING_PROFILE | base64 -d > ${HOME}/${CI_PROJECT_NAME}.mobileprovision
+#     - npx expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD
+#     - npx expo build:ios --team-id $APPLE_TEAM_ID --push-id $PUSH_KEY_ID --dist-p12-path ${HOME}/${CI_PROJECT_NAME}.p12 --push-p8-path ${HOME}/${CI_PROJECT_NAME}.p8 --provisioning-profile-path ${HOME}/${CI_PROJECT_NAME}.mobileprovision --no-publish --non-interactive
+#     - mkdir -p ipas
+#     - curl "$(npx expo url:ipa --non-interactive)" -o ipas/${CI_PROJECT_NAME}-${TAG}.ipa
+#   only:
+#     - develop
+deploy-testing:
+  stage: deploy
+  tags:
+    - testing
+  only:
+    - test
+  script:
+    # - cd docker-nodejs-express-mongodb-react-redis-nginx-06-Docker-Nginx-SSL-HTTPS
+    - sudo docker-compose -f docker-compose.staging.yml down
+    - sudo docker-compose -f docker-compose.staging.yml up -d --build
+    # - docker rmi $(docker images --filter "dangling=true" --quiet --no-trunc)
+  environment:
+    name: staging
+    url: http://travel-together-testing.uksouth.cloudapp.azure.com
+
+deploy-production:
+  stage: deploy
+  tags:
+    - production
+  only:
+    - main
+  script:
+    # - cd docker-nodejs-express-mongodb-react-redis-nginx-06-Docker-Nginx-SSL-HTTPS
+    - docker-compose -f docker-compose.prod.yml down
+    - docker-compose -f docker-compose.prod.yml up -d --build
+    # - docker rmi $(docker images --filter "dangling=true" --quiet --no-trunc)
+  environment:
+    name: production
+    url: http://travel-together-production.eastus2.cloudapp.azure.com

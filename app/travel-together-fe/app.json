@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "Travel Together",
+    "slug": "travel-together",
+    "version": "1.2.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon-app.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-screen.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dinhvi.traveltogetherfe",
+      "usesAppleSignIn": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.dinhvi.traveltogetherfe"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "scheme": "mycoolredirect",
+    "extra": {
+      "firebase": {
+        "apiKey": "AIzaSyApGoaZVtoVTYnftHSbT9l7nDmDVUYJYpU",
+        "authDomain": "playground-d4e7b.firebaseapp.com",
+        "databaseURL": "https://playground-d4e7b.firebaseio.com",
+        "projectId": "playground-d4e7b",
+        "storageBucket": "playground-d4e7b.appspot.com",
+        "messagingSenderId": "903405300293",
+        "appId": "1:903405300293:web:c55227a2b8064da05d112c"
+      }
+    },
+    "facebookScheme": "fb735907774389905",
+    "facebookAppId": "735907774389905",
+    "facebookDisplayName": "travelapp"
+  }
+}

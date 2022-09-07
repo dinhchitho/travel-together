@@ -1,0 +1,11 @@
+[
+  {
+    "name": "ROLE_ADMIN"
+  },
+  {
+    "name": "ROLE_LOCAL_GUILD"
+  },
+  {
+    "name": "ROLE_USER"
+  }
+]

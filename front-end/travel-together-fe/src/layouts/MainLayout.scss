@@ -1,0 +1,16 @@
+.container-dashboard {
+  display: flex;
+  color: var(--txt-color);
+  .right-menu {
+    width: 80%;
+    height: 100vh;
+    margin-left: var(--sidebar-width);
+  }
+}
+.main-layout {
+  padding: 0 30px;
+  margin-top: calc(60px + var(--topnav-height));
+  h2 {
+    margin-bottom: 10px;
+  }
+}

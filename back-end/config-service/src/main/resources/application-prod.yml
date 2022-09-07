@@ -1,0 +1,29 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  application:
+    name: Travel Together
+  data:
+    mongodb:
+      authentication-database: ${SPRING_DATA_MONGO_AUTHENTICATION_DATABASE}
+      username: ${SPRING_DATA_MONGO_USERNAME}
+      password: ${SPRING_DATA_MONGO_PASSWORD}
+      host: ${SPRING_DATA_MONGO_HOST}
+      port: ${SPRING_DATA_MONGO_PORT}
+      database: ${SPRING_DATA_MONGO_DATABASE}
+      uri: ${SPRING_DATA_MONGO_URI}
+  socket:
+    url: ${SPRING_SOCKET_URL}
+server:
+  port: 8095
+  servlet:
+    context-path: /api
+travel-together:
+  app:
+    jwtSecret: travelTogetherSecretKey
+    jwtExpirationMs: 86400000
+twilio:
+  account_sid: AC32af6f3d56b4a167ea1a1b46e447e054
+  auth_token: ca45d628554ce8886373c10bf766e20f
+  trial_number: +17742685682

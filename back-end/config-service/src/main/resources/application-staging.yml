@@ -1,0 +1,29 @@
+spring:
+  config:
+    activate:
+      on-profile: staging
+  application:
+    name: Travel Together
+  data:
+    mongodb:
+      authentication-database: admin
+      username: thodc
+      password: de140096A@
+      host: 20.163.124.249
+      port: 27017
+      database: travel-together-staging
+      uri: mongodb://thodc:de140096A%40@20.163.124.249:27017/travel-together-staging?authSource=admin
+  socket:
+    url: http://20.163.124.249/socket-server/
+server:
+  port: 8095
+  servlet:
+    context-path: /api
+travel-together:
+  app:
+    jwtSecret: travelTogetherSecretKey
+    jwtExpirationMs: 86400000
+twilio:
+  account_sid: AC32af6f3d56b4a167ea1a1b46e447e054
+  auth_token: ca45d628554ce8886373c10bf766e20f
+  trial_number: +17742685682
